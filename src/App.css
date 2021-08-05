@@ -1,20 +1,14 @@
+@font-face {
+  font-family: "Digital7-1e1Z";
+  src: url("./assets/Digital7-1e1Z.ttf");
+}
+
 .App {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
-  background-color: #282c34;
+  background-color: #d5e1df;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -24,15 +18,135 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+#calculator {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: stretch;
+  max-width: 65vw;
+  height: 55vh;
+  border: 5px solid black;
+  background-color: black;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#display {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 14%;
+  font-family: "Digital7-1e1Z";
+  text-align: right;
+  background-color: black;
+}
+
+#display-top {
+  width: 100%;
+  height: 50%;
+  color: orange;
+  font-size: 0.9em;
+}
+
+#display-bottom {
+  width: 100%;
+  height: 50%;
+  font-size: 1.1em;
+}
+
+#keyboard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 86%;
+  font-family: Orbitron;
+}
+
+.keyboard-one {
+  width: 100%;
+  height: 20%;
+}
+
+.horizontal-ops {
+  width: 25%;
+  height: 100%;
+  background-color: #808080;
+  color: white;
+}
+
+#clear {
+  width: 50%;
+  height: 100%;
+  background-color: #b22222;
+}
+
+.keyboard-two {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 80%;
+}
+
+.keyboard-two-a {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: stretch;
+  align-content: stretch;
+  width: 75%;
+  height: 100%;
+}
+
+.digits {
+  width: 33.33%;
+  background-color: #696969;
+  color: white;
+}
+
+#zero {
+  width: 66.66%;
+}
+
+.keyboard-two-b {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-content: stretch;
+  width: 25%;
+  height: 100%;
+}
+
+.vertical-ops {
+  width: 100%;
+  height: 25%;
+  background-color: #808080;
+  color: white;
+}
+
+#equals {
+  height: 50%;
+  background-color: #483d8b;
+}
+
+#credit p {
+  color: black;
+  font-size: 0.6em;
+  margin: 0;
+  padding: 8px 0 5px 0;
+  text-align: center;
+  width: 21vw;
+}
+
+a {
+  text-decoration: none;
+}
+
+button {
+  border: 0.3px solid black;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+button:hover {
+  border: 0.3px solid whitesmoke;
+  color: black;
 }
