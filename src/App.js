@@ -1,110 +1,270 @@
 import React from "react";
-// import ReactDOM from "react-dom";
 import "./App.css";
+
+const specOps = ["/", "x", "-", "+"];
+
+const calculation = (arr) => {
+  var result = arr[0];
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i + 1] === `/`) {
+      result = result / arr[i + 2];
+      continue;
+    }
+  }
+};
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      displayTop: ``,
+      displayTop: [],
       displayBottom: `0`,
-      displayArray: [],
     };
     this.handleClear = this.handleClear.bind(this);
-    this.addDecimal = this.addDecimal.bind(this);
-    this.addZero = this.addZero.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-    this.handleChange = this.handleChange.bind(this);
+    this.handleDecimal = this.handleDecimal.bind(this);
+    this.handleNumbers = this.handleNumbers.bind(this);
     this.handleOperators = this.handleOperators.bind(this);
     this.handleCalculation = this.handleCalculation.bind(this);
   }
 
+  // reset displayTop and displayBottom
   handleClear() {
-    this.setState({ displayTop: ``, displayBottom: `0`, displayArray: [] });
+    console.log(this.state.displayTop);
+    this.setState({ displayTop: [], displayBottom: `0` });
   }
 
-  addDecimal(e) {
-    if (this.state.displayBottom.indexOf(`.`) === -1) {
-      this.setState({
-        displayBottom: `${this.state.displayBottom} ${e.target.value}`,
-        displayArray: this.state.displayArray.push(
-          `${this.state.displayBottom} ${e.target.value}`
-        ),
-        displayTop: this.state.displayArray.join(),
-      });
-    }
-  }
-
-  addZero(e) {}
-
-  handleClick(e) {
-    if (this.state.displayBottom.indexOf(`.`) > 0) {
-      this.setState({
-        displayBottom: `${this.state.displayBottom} ${e.target.value}`,
-        displayArray: this.state.displayArray.push(`${e.target.value}`),
-        displayTop: this.state.displayArray.join(),
-      });
-    } else if (this.state.displayBottom === `0`) {
-      this.setState({
-        displayBottom: `${e.target.value}`,
-        displayArray: this.state.displayArray.push(`${e.target.value}`),
-        displayTop: this.state.displayArray.join(),
-      });
-    } else if (this.state.displayBottom !== `0`) {
-      this.setState({
-        displayBottom: `${this.state.displayBottom} ${e.target.value}`,
-        displayArray: this.state.displayArray.push(`${e.target.value}`),
-        displayTop: this.state.displayArray.join(),
-      });
-    }
-
+  handleDecimal(e) {
+    // add only one decimal point to displayBottom
+    // ensure displayBottom does not contain an operator
     if (
-      this.state.displayBottom.slice(this.state.displayBottom.length - 1) ===
-        `/` ||
-      this.state.displayBottom.slice(this.state.displayBottom.length - 1) ===
-        `x` ||
-      this.state.displayBottom.slice(this.state.displayBottom.length - 1) ===
-        `-` ||
-      this.state.displayBottom.slice(this.state.displayBottom.length - 1) ===
-        `+`
-    ) {
-      this.setState({
-        displayBottom: `${e.target.value}`,
-        displayArray: this.state.displayArray.push(`${e.target.value}`),
-        displayTop: this.state.displayArray.join(),
-      });
-    }
-
-    if (
-      this.state.displayBottom.slice(this.state.displayBottom.length - 1) ===
-        `-` &&
-      (this.state.displayTop.slice(this.state.displayTop.length - 1) === `` ||
-        this.state.displayTop.slice(this.state.displayTop.length - 1) === `/` ||
-        this.state.displayTop.slice(this.state.displayTop.length - 1) === `*` ||
-        this.state.displayTop.slice(this.state.displayTop.length - 1) === `-` ||
-        this.state.displayTop.slice(this.state.displayTop.length - 1) === `+`)
+      this.state.displayBottom.indexOf(`.`) === -1 &&
+      this.state.displayBottom !== `/` &&
+      this.state.displayBottom !== `x` &&
+      this.state.displayBottom !== `-` &&
+      this.state.displayBottom !== `+`
     ) {
       this.setState({
         displayBottom: `${this.state.displayBottom} ${e.target.value}`,
-        displayArray: this.state.displayArray.push(`${e.target.value}`),
-        displayTop: this.state.displayArray.join(),
       });
     }
   }
-  // stop
-  handleChange() {
-    this.setState({
-      displayTop: this.state.displayBottom,
-    });
+
+  handleNumbers(e) {
+    if (this.state.displayTop.join("").length === 20) {
+      this.setState({ disabled: `1` });
+    }
+
+    // if displayBottom is zero
+    if (this.state.displayBottom === `0`) {
+      this.setState({ displayBottom: e.target.value });
+    }
+
+    // if displayBottom is greater than zero
+    if (this.state.displayBottom > `0`) {
+      this.setState({
+        displayBottom: `${this.state.displayBottom} ${e.target.value}`,
+      });
+    }
+
+    // if displayBottom is less than zero
+    if (this.state.displayBottom < `0`) {
+      this.setState({
+        displayBottom: `${this.state.displayBottom} ${e.target.value}`,
+      });
+    }
+
+    // if displayTop is empty
+    // and displayBottom contains a non-minus operator
+    if (
+      !this.state.displayTop.length &&
+      this.state.displayBottom.indexOf(`-`) === -1 &&
+      (this.state.displayBottom === `/` ||
+        this.state.displayBottom === `x` ||
+        this.state.displayBottom === `+`)
+    ) {
+      this.setState({ displayBottom: e.target.value });
+    }
+
+    // if displayTop is empty
+    // and displayBottom contains the minus operator
+    if (
+      !this.state.displayTop.length &&
+      this.state.displayBottom.indexOf(`-`) !== -1
+    ) {
+      this.setState({
+        displayBottom: `${this.state.displayBottom} ${e.target.value}`,
+      });
+    }
+
+    // if displayTop is not empty,
+    // last element in displayTop is not an operator,
+    // and displayBottom contains an operator*
+    if (
+      this.state.displayTop.length &&
+      this.state.displayTop[this.state.displayTop.length - 1] !== `/` &&
+      this.state.displayTop[this.state.displayTop.length - 1] !== `x` &&
+      this.state.displayTop[this.state.displayTop.length - 1] !== `-` &&
+      this.state.displayTop[this.state.displayTop.length - 1] !== `+` &&
+      specOps.includes(this.state.displayBottom)
+    ) {
+      this.setState({
+        displayTop: [...this.state.displayTop, this.state.displayBottom],
+      });
+
+      this.setState({
+        displayBottom: e.target.value,
+      });
+    }
+
+    // if displayTop is not empty,
+    // displayBottom contains minus operator
+    // and last element in displayTop is an operator
+    if (
+      this.state.displayTop.length &&
+      this.state.displayBottom === `-` &&
+      (this.state.displayTop[this.state.displayTop.length - 1] === `/` ||
+        this.state.displayTop[this.state.displayTop.length - 1] === `x` ||
+        this.state.displayTop[this.state.displayTop.length - 1] === `-` ||
+        this.state.displayTop[this.state.displayTop.length - 1] === `+`)
+    ) {
+      this.setState({
+        displayTop: [...this.state.displayTop],
+      });
+
+      this.setState({
+        displayBottom: `${this.state.displayBottom} ${e.target.value}`,
+      });
+    }
   }
 
   handleOperators(e) {
-    this.setState({
-      displayBottom: `${e.target.value}`,
-    });
+    // if displayTop array is empty,
+    // and displayBottom is greater than zero
+    if (
+      !this.state.displayTop.length &&
+      this.state.displayBottom > `0` &&
+      specOps.includes(this.state.displayBottom) !== true
+    ) {
+      this.setState({
+        displayTop: [this.state.displayBottom],
+      });
+
+      this.setState({ displayBottom: e.target.value });
+    }
+
+    // if displayBottom is less zero,
+    // and displayBottom is not an operator
+    if (
+      this.state.displayBottom < `0` &&
+      this.state.displayBottom !== `/` &&
+      this.state.displayBottom !== `x` &&
+      this.state.displayBottom !== `-` &&
+      this.state.displayBottom !== `+`
+    ) {
+      this.setState({
+        displayTop: [...this.state.displayTop, this.state.displayBottom],
+      });
+
+      this.setState({ displayBottom: e.target.value });
+    }
+
+    // if displayTop array is empty,
+    // and displayBottom is zero
+    if (!this.state.displayTop.length && this.state.displayBottom === `0`) {
+      this.setState({ displayBottom: e.target.value });
+    }
+
+    // if displayBottom is an operator
+    if (
+      this.state.displayBottom === `/` ||
+      this.state.displayBottom === `x` ||
+      this.state.displayBottom === `-` ||
+      this.state.displayBottom === `+`
+    ) {
+      this.setState({ displayBottom: e.target.value });
+    }
+
+    // if displayTop array is not empty,
+    // if displayBottom is an operator,
+    // and operator clicked is minus
+    if (
+      this.state.displayTop.length &&
+      (this.state.displayBottom === `/` ||
+        this.state.displayBottom === `x` ||
+        this.state.displayBottom === `-` ||
+        this.state.displayBottom === `+`) &&
+      e.target.value === `-`
+    ) {
+      this.setState({
+        displayTop: [...this.state.displayTop, this.state.displayBottom],
+      });
+
+      this.setState({ displayBottom: e.target.value });
+    }
+
+    // if displayTop array is not empty,
+    // and last element of displayTop array is not an operator,
+    if (
+      this.state.displayTop.length &&
+      this.state.displayTop[this.state.displayTop.length - 1] !== `/` &&
+      this.state.displayTop[this.state.displayTop.length - 1] !== `x` &&
+      this.state.displayTop[this.state.displayTop.length - 1] !== `-` &&
+      this.state.displayTop[this.state.displayTop.length - 1] !== `+`
+    ) {
+      this.setState({ displayBottom: e.target.value });
+    }
+
+    // if displayTop array is not empty,
+    // and last element of displayTop array is an operator,
+    if (
+      this.state.displayTop.length &&
+      (this.state.displayTop[this.state.displayTop.length - 1] === `/` ||
+        this.state.displayTop[this.state.displayTop.length - 1] === `x` ||
+        this.state.displayTop[this.state.displayTop.length - 1] === `-` ||
+        this.state.displayTop[this.state.displayTop.length - 1] === `+`)
+    ) {
+      this.setState({
+        displayTop: [...this.state.displayTop, this.state.displayBottom],
+      });
+
+      this.setState({ displayBottom: e.target.value });
+    }
   }
 
-  handleCalculation() {}
+  handleCalculation() {
+    // remove operator at the end of displayTop array if any
+    if (
+      this.state.displayTop[this.state.displayTop.length - 1] === `/` ||
+      this.state.displayTop[this.state.displayTop.length - 1] === `x` ||
+      this.state.displayTop[this.state.displayTop.length - 1] === `-` ||
+      this.state.displayTop[this.state.displayTop.length - 1] === `+`
+    ) {
+      let arrx = this.state.displayTop.slice(
+        0,
+        this.state.displayTop.length - 1
+      );
+
+      // evaluate array
+      const ans = calculation(arrx);
+
+      // return answer in both displayTop and displayBottom
+      this.setState({
+        displayTop: `${arrx.join("")} = ${ans}`,
+        displayBottom: `${ans}`,
+      });
+    } else {
+      let arrz = this.state.displayTop;
+
+      // evaluate array
+      const ans = calculation(arrz);
+
+      // return answer in both displayTop and displayBottom
+      this.setState({
+        displayTop: `${arrz.join("")} = ${ans}`,
+        displayBottom: `${ans}`,
+      });
+    }
+  }
 
   render() {
     return (
@@ -113,9 +273,7 @@ class App extends React.Component {
           <div id="calculator">
             <div id="display">
               <div id="display-top">{this.state.displayTop}</div>
-              <div id="display-bottom" onChange={this.handleChange}>
-                {this.state.displayBottom}
-              </div>
+              <div id="display-bottom">{this.state.displayBottom}</div>
             </div>
             <div id="keyboard" className="keyboard">
               <div id="horizontal-ops" className="keyboard-one">
@@ -149,7 +307,7 @@ class App extends React.Component {
                     id="seven"
                     value="7"
                     className="digits"
-                    onClick={this.handleClick}
+                    onClick={this.handleNumbers}
                   >
                     7
                   </button>
@@ -157,7 +315,7 @@ class App extends React.Component {
                     id="eight"
                     value="8"
                     className="digits"
-                    onClick={this.handleClick}
+                    onClick={this.handleNumbers}
                   >
                     8
                   </button>
@@ -165,7 +323,7 @@ class App extends React.Component {
                     id="nine"
                     value="9"
                     className="digits"
-                    onClick={this.handleClick}
+                    onClick={this.handleNumbers}
                   >
                     9
                   </button>
@@ -173,7 +331,7 @@ class App extends React.Component {
                     id="four"
                     value="4"
                     className="digits"
-                    onClick={this.handleClick}
+                    onClick={this.handleNumbers}
                   >
                     4
                   </button>
@@ -181,7 +339,7 @@ class App extends React.Component {
                     id="five"
                     value="5"
                     className="digits"
-                    onClick={this.handleClick}
+                    onClick={this.handleNumbers}
                   >
                     5
                   </button>
@@ -189,7 +347,7 @@ class App extends React.Component {
                     id="six"
                     value="6"
                     className="digits"
-                    onClick={this.handleClick}
+                    onClick={this.handleNumbers}
                   >
                     6
                   </button>
@@ -197,7 +355,7 @@ class App extends React.Component {
                     id="one"
                     value="1"
                     className="digits"
-                    onClick={this.handleClick}
+                    onClick={this.handleNumbers}
                   >
                     1
                   </button>
@@ -205,7 +363,7 @@ class App extends React.Component {
                     id="two"
                     value="2"
                     className="digits"
-                    onClick={this.handleClick}
+                    onClick={this.handleNumbers}
                   >
                     2
                   </button>
@@ -213,7 +371,7 @@ class App extends React.Component {
                     id="three"
                     value="3"
                     className="digits"
-                    onClick={this.handleClick}
+                    onClick={this.handleNumbers}
                   >
                     3
                   </button>
@@ -221,7 +379,7 @@ class App extends React.Component {
                     id="zero"
                     value="0"
                     className="digits"
-                    onClick={this.handleClick}
+                    onClick={this.handleNumbers}
                   >
                     0
                   </button>
@@ -229,7 +387,7 @@ class App extends React.Component {
                     id="decimal"
                     className="digits"
                     value="."
-                    onClick={this.addDecimal}
+                    onClick={this.handleDecimal}
                   >
                     .
                   </button>

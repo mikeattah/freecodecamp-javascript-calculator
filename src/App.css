@@ -32,6 +32,8 @@
 
 #display {
   display: flex;
+  justify-content: space-between;
+  align-content: space-between;
   flex-direction: column;
   width: 100%;
   min-height: 14%;
@@ -42,14 +44,14 @@
 
 #display-top {
   width: 100%;
-  height: 50%;
+  height: 42%;
   color: orange;
   font-size: 0.9em;
 }
 
 #display-bottom {
   width: 100%;
-  height: 50%;
+  height: 42%;
   font-size: 1.1em;
 }
 
