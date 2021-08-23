@@ -1,57 +1,33 @@
 import React from "react";
 import "./App.css";
 
-const allOperators = [`/`, `*`, `-`, `+`];
-const nonMinusOperators = [`/`, `*`, `+`];
+const allOperators = ["/", "*", "-", "+"];
+const nonMinusOperators = ["/", "*", "+"];
 // const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-const calculation = (arr) => {
-  var workingArr = [...arr];
-  reStart: for (let i = 0; i < workingArr.length; i++) {
-    console.log(workingArr);
-    if (workingArr.length === 3) {
-      switch (workingArr[1]) {
-        case "/":
-          return parseFloat(workingArr[0]) / parseFloat(workingArr[2]);
-        case "*":
-          return parseFloat(workingArr[0]) * parseFloat(workingArr[2]);
-        case "-":
-          return parseFloat(workingArr[0]) - parseFloat(workingArr[2]);
-        case "+":
-          return parseFloat(workingArr[0]) + parseFloat(workingArr[2]);
-        default:
-          return;
-      }
+function calc(arr) {
+  let result = parseFloat(arr[0]);
+  for (let i = 1; i < arr.length; i += 2) {
+    switch (arr[i]) {
+      case "/":
+        result /= parseFloat(arr[i + 1]);
+        break;
+      case "*":
+        result *= parseFloat(arr[i + 1]);
+        break;
+      case "-":
+        result -= parseFloat(arr[i + 1]);
+        break;
+      case "+":
+        result += parseFloat(arr[i + 1]);
+        break;
+      default:
+        break;
     }
-
-    if (workingArr.length > 3) {
-      switch (workingArr[1]) {
-        case "+":
-          let plus = parseFloat(workingArr[0]) + parseFloat(workingArr[2]);
-          let elemOne = workingArr.slice(3);
-          workingArr = [plus, ...elemOne]; // problem area
-          break reStart;
-        case "-":
-          let minus = parseFloat(workingArr[0]) - parseFloat(workingArr[2]);
-          let elemTwo = workingArr.slice(3);
-          workingArr = [minus, ...elemTwo];
-          break reStart;
-        case "*":
-          let multiply = parseFloat(workingArr[0]) * parseFloat(workingArr[2]);
-          let elemThree = workingArr.slice(3);
-          workingArr = [multiply, ...elemThree];
-          break reStart;
-        case "/":
-          let divide = parseFloat(workingArr[0]) / parseFloat(workingArr[2]);
-          let elemFour = workingArr.slice(3);
-          workingArr = [divide, ...elemFour];
-          break reStart;
-        default:
-          break reStart;
-      }
-    }
+    console.log(result);
   }
-};
+  return result;
+}
 
 class App extends React.Component {
   constructor(props) {
@@ -106,17 +82,16 @@ class App extends React.Component {
 
   // XXXXXXXXXXXXXXXXXXXX
   handleNumbers(e) {
-    // if displayTop is empty,
-    // and displayBottom is zero;
-    if (!this.state.displayTop.length && this.state.displayBottom === `0`) {
+    // if displayTop is empty;
+    if (!this.state.displayTop.length) {
       this.setState({
         displayBottom: e.target.value,
         displayTop: [e.target.value],
       });
     }
 
-    // if displayTop is not empty;
-    // if displayBottom is greater than zero
+    // if displayTop is not empty,
+    // and if displayBottom is greater than zero,
     // or displayBottom is less than zero;
     if (this.state.displayBottom > `0` || this.state.displayBottom < `0`) {
       this.setState({
@@ -157,7 +132,7 @@ class App extends React.Component {
     // and second to last element in displayTop is an operator;
     if (
       this.state.displayTop.length &&
-      this.state.displayBottom === `-` &&
+      this.state.displayTop[this.state.displayTop.length - 1] === `-` &&
       allOperators.includes(
         this.state.displayTop[this.state.displayTop.length - 2]
       )
@@ -185,7 +160,7 @@ class App extends React.Component {
 
     // if displayTop is not empty,
     // and displayBottom contains the minus operator,
-    // and second to last element in displayTop is a number;
+    // and second to last element in displayTop is an operator;
     if (
       this.state.displayTop.length &&
       this.state.displayBottom === `-` &&
@@ -229,15 +204,26 @@ class App extends React.Component {
     }
 
     // if displayTop array is not empty,
-    // if last element in displayTop is an operator,
-    // if displayBottom is an operator,
-    // and operator clicked is minus
+    // if last element in displayTop is a non-minus operator,
+    if (
+      this.state.displayTop.length &&
+      nonMinusOperators.includes(
+        this.state.displayTop[this.state.displayTop.length - 1]
+      )
+    ) {
+      this.setState({
+        displayBottom: e.target.value,
+        displayTop: [...this.state.displayTop.slice(0, -1), e.target.value],
+      });
+    }
+
+    // if displayTop array is not empty,
+    // if last element in displayTop is the minuus operator,
     if (
       this.state.displayTop.length &&
       allOperators.includes(
         this.state.displayTop[this.state.displayTop.length - 1]
       ) &&
-      allOperators.includes(this.state.displayBottom) &&
       e.target.value === `-`
     ) {
       this.setState({
@@ -260,17 +246,21 @@ class App extends React.Component {
       });
     }
 
-    // if displayTop array is not empty, ?????
-    // and last element of displayTop array is an operator,
-    // and operator clicked is a non-minus operator
+    // if displayTop array is not empty,
+    // and last two elements of displayTop array is an operator,
     if (
       this.state.displayTop.length &&
-      allOperators.includes(
+      allOperators.indexOf(
         this.state.displayTop[this.state.displayTop.length - 1]
-      ) &&
-      e.target.value !== `-`
+      ) !== -1 &&
+      allOperators.indexOf(
+        this.state.displayTop[this.state.displayTop.length - 2]
+      ) !== -1
     ) {
-      this.setState({ displayBottom: e.target.value });
+      this.setState({
+        displayBottom: e.target.value,
+        displayTop: [...this.state.displayTop.slice(0, -2), e.target.value],
+      });
     }
 
     if (this.state.displayTop.includes(`=`)) {
@@ -281,7 +271,6 @@ class App extends React.Component {
     }
   }
 
-  // CONTINUE FROM HERE
   // XXXXXXXXXXXXXXXXXXXX
   handleCalculation() {
     // return single element number in displayTop
@@ -308,7 +297,7 @@ class App extends React.Component {
       );
 
       // evaluate array
-      const ans = calculation(arrx);
+      const ans = calc(arrx);
 
       // return answer in both displayTop and displayBottom
       this.setState({
@@ -319,7 +308,7 @@ class App extends React.Component {
       let arrz = [...this.state.displayTop];
 
       // evaluate array
-      const ans = calculation(arrz);
+      const ans = calc(arrz);
 
       // return answer in both displayTop and displayBottom
       this.setState({
@@ -335,8 +324,10 @@ class App extends React.Component {
       <div className="App">
         <div className="App-header">
           <div id="calculator">
-            <div id="display">{this.state.displayTop}</div>
-            <div id="input">{this.state.displayBottom}</div>
+            <div className="display">{this.state.displayTop}</div>
+            <div id="display" className="input">
+              {this.state.displayBottom}
+            </div>
             <div id="keyboard" className="keyboard">
               <div id="horizontal-ops" className="keyboard-one">
                 <button
