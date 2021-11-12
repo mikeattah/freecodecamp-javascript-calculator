@@ -1,3 +1,4 @@
+Sitemap: https://github.com/mikeattah/javascript-calculator/blob/main/sitemap.txt
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Disallow:
